@@ -1,1 +1,1 @@
-require('./lifeViewClass')
+require('./lifeViewClass');

@@ -1,11 +1,26 @@
-var Life = require('./lifeClass.js');
+var Life = require('./lifeClass.js').Life;
+
 (function(){
     class LifeView {
         constructor(table, size) {
             this.grid = table;
             this.size = size;
+            this.started = false;
+            this.autoplay = false;
+            this.attachEvents();
             this.createGrid();
         }
+
+        attachEvents(){
+            let that = this;
+            $("#play").click(function () {
+                that.play();
+            })
+            $("#next").click(function () {
+                that.next();
+            })
+        }
+
         createGrid() {
             this.checkboxes =[];
             this.grid.empty();
@@ -26,13 +41,31 @@ var Life = require('./lifeClass.js');
             this.grid.append(fragment);
         }
 
-        get boardArray(){
-            return this.checkboxes.map((row)=>row.map((cell)=>+cell.checked))
+        boardArray(){
+            return this.checkboxes.map((row)=>row.map((cell)=>+cell.is(":checked")))
         }
 
         play(){
-            this.game = new Life(this.boardArray())
+            this.game = new Life(this.boardArray());
+            this.started = true;
         }
+        next () {
+        let that = this;
+
+        if (!this.started || this.game) {
+            this.play();
+        }
+
+        this.game.next();
+
+        let board = this.game.board;
+
+        for (let i=0; i<this.size; i++) {
+            for (let j=0; j<this.size; j++) {
+                this.checkboxes[i][j].checked = !!board[i][j];
+            }
+        }
+    }
     }
     let game = new LifeView($("#grid"), 12);
 })()
